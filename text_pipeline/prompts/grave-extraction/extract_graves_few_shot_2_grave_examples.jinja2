@@ -1,0 +1,295 @@
+Du bist Experte für das Extrahieren archäologischer Informationen aus Grabkatalogen.
+Arbeite ausschließlich textbasiert und nutze keine externen Annahmen. Verwende nur Informationen, die im Abschnitt klar genannt werden.
+
+Deine Aufgabe besteht aus zwei Hauptteilen:
+
+# 1. Gemeinsamen Kontext extrahieren (shared_context)
+
+Extrahiere allgemeine Informationen, die für nachfolgende Gräber relevant sein können.
+
+Gib zwei Gruppen aus:
+
+## 1.1 structured
+
+Maschinenlesbare Schlüssel–Wert-Paare, die sich auf alle nachfolgenden Gräber im Katalogabschnitt beziehen.
+Beispiele:
+- fundort
+- bezirk
+- weitere klar identifizierbare Grabattribute
+
+Wenn keine allgemeinen Informationen vorhanden sind → gib {} zurück.
+
+## 1.2 interpretive
+
+Kurze Stichpunkte (bullet points), die Regeln, Hinweise oder Besonderheiten beschreiben, die für die spätere Grab-Extraktion relevant sind.
+Nur aufnehmen, wenn sie direkten Einfluss auf die Bestimmung struktureller Grabattribute haben.
+Beispiele:
+- Hinweise auf Klassifikationsregeln
+- Markierungen, die Bedeutung tragen
+- Abschnittsweit geltende Konventionen
+
+Wenn keine vorhanden sind → gib [] zurück.
+
+# 2. Einzelne Gräber extrahieren (graves)
+
+Extrahiere alle individuell beschriebenen Gräber aus dem Text.
+Ein Grab soll nur extrahiert werden, wenn konkrete Attribute genannt werden (z. B. Maße, Körperlage, Grabform, Beigaben usw.).
+
+## Regeln zur Identifikation:
+
+Nutze die Grab-ID aus dem Abschnittstitel, wenn eindeutig:
+Beispiel: Titel „Grab 3“ → grave_id = "Grab 3".
+
+Wenn der Titel keine ID enthält, aber ein Grab im Text beschrieben wird, vergib eine eigene geeignete ID.
+
+Ignoriere rein summarische Aussagen:
+z. B. „In diesem Feld lagen 100 Gräber“ oder „Die Gräber 1–10 waren beigabenlos“.
+
+Ignoriere Gräber, die in Einleitungstexten erwähnt werden, aber nicht genau beschrieben werden.
+
+Extrahiere nur, was eindeutig zuordenbar ist.
+Was im Text nicht klar klassifizierbar ist → null.
+
+Wenn keine Gräber beschrieben werden → gib eine leere Liste [] aus.
+
+## Nutzung von geerbtem Kontext
+
+Wenn im übergeordneten Abschnitt Kontext übergeben wird, verwende ihn ergänzend.
+
+# Beispiel 1
+
+Kontext Strukturelle Attribute: {"fundort": "Abraham", "bestattung_ritus": "körperbestattung"}
+
+Titel des Abschnitts: Grab 128 (C 4)
+Hierarchie-Kontext: 3. GRÄBERFELDER, GRÄBER UND GRABFUNDE > 3.1. ABRAHÁM, Bez. Galanta > 3.1.1. Abrahám I > Gräber und Grabfunde aus den Jahren 1953–1955 > Körpergräber 1–181 > Grab 128 (C 4)
+
+Text:
+"""
+Grab 128 (C 4)
+-------------
+Rechteckige Grabgrube (180 x 90 x 95 cm); Skelett (vermutlich Frau, adult I,
+20 – 30 J.) in linker Hockerlage, Orientierung OSO–WNW, Schädel auf linker
+Seite, Blick nach SSW, sekundäre Störung im Brustbereich, Oberarme am Kör-
+per, Unterarme möglicherweise auf der Brust, Beine nebeneinanderliegend, im
+Becken nach unten abgewinkelt, in den Knien unterschiedlich scharf angewin-
+kelt (Abb. 23). Im Bereich des rechten Ohres Weidenblattring (1), des linken Oh-
+res drei Weidenblattringe (2–4), im Brustbereich Knochenperlen (5) und Kno-
+chenverteiler (6, 7), Spiralröhrchen (8), Blechröhrchen (9) und Drahtfragment
+(10), vor dem Becken Tierrippe (11). Auf einem Photo in der Kartei ist auch eine
+Fayenceperle festgehalten (12). Die W–Ecke der Grabgrube schnitt die Grabgru-
+be des Grabes 127.
+1. 12 kleine Fragmente eines  Weidenblattringes  mit einseitiger Mittelrippe (nach
+Zeichnung in der Grabungsdokumentation).
+2, 3. Zwei  Weidenblattringe  vom selben Typ, ineinandergeschoben und durch Pa-
+tina miteinander verbunden, Blatt mit einseitiger Mittelrippe, Stielquerschnitt
+rund, ein Stiel alt abgebrochen; Dm. 4,6 x 4,7 cm (Taf. 10–128: 2, 3).
+4.  Weidenblattring , Blatt mit einseitiger Mittelrippe, Stiel alt abgebrochen; Dm.
+4,6 cm (Taf. 10–128: 4).
+5.  Knochenperlen , kreisrund, flach bis zylindrisch, 113 Stück und 16 Fragmente,
+fünf davon grün verfärbt; H. 0,15–0,7 cm, Dm. 0,6–0,8 cm (Taf. 10–128: 5).
+Abb. 23. Abrahám I, Grab 128
+(ohne Nr. 2–4, 7–10).
+6.  Knochenverteiler , ein Ende abgerundet, das andere beschädigt, sieben Lö-
+cher; L. 4,7 cm, Br. 0,8 cm (Taf. 10–128: 6).
+7. Fragment eines  Knochenverteilers  wie Nr. 6, zwei Löcher; Br. 0,6 cm.
+8. Fragment eines  Spiralröhrchens ; L. 0,6 cm, Dm. 0,8 cm.
+9. Zwei kleine Fragmente eines(?)  Blechröhrchens .
+10.  Drahtfragment ; L. 0,9 cm.
+11.  Tierrippe , nicht auffindbar; L. lt. DP etwa 30 cm.
+12.  Fayenceperle , nicht auffindbar; Zugehörigkeit zum Grab unsicher.
+"""
+
+Ausgabe (mit Erklärung, wieso Wert so bestimmt wurde als Kommentar in gleicher Zeile): 
+{% raw %}
+{
+    "shared_context": {
+        "structured": {},
+        "interpretive": []
+    },
+    "graves": [
+        {
+            "fundort": "Abrahám",
+            "bezirk": "Galanta",
+            "grab_identifikation": "Grab 128 (C 4)", // eindeutig im Titel
+            "bestattungen": [
+                {
+                    "geschlecht": "weiblich_unsicher", // "vermutlich Frau"
+                    "alter": "adult",
+                    "ritus": "körperbestattung", // zu finden in structured context oder im Hierarchiestring ("Körpergräber 1 - 181")
+                    "orientierung": "OSO-WNW",
+                    "lage": "linker Hocker",
+                    "störung": "ja" // "sekundäre Störung im Brustbereich"
+                }
+            ],
+            "grabeinbauten": null,
+            "grube_form": "rechteckig",
+            "grube_länge": 180,
+            "grube_breite": 90,
+            "grube_tiefe": 95,
+            "beigaben_liste": [
+                {
+                    "name": "Weidenblattring",
+                    "amount": 4 // es werden nicht die Fragmente gezählt, sondern die Anzahl des Objektes an sich = 4 (Fundstücke 1-4 in der Auflistung)
+                },
+                {
+                    "name": "Knochenperle",
+                    "amount": 113
+                },
+                {
+                    "name": "Knochenverteiler",
+                    "amount": 2
+                },
+                {
+                    "name": "Spiralröhrchen",
+                    "amount": 1
+                },
+                {
+                    "name": "Blechröhrchen",
+                    "amount": 1
+                },
+                {
+                    "name": "Draht",
+                    "amount": 1
+                },
+                {
+                    "name": "Fayenceperle",
+                    "amount": 1
+                },
+                {
+                    "name": "Tierrippe", // auch nicht auffindbare Items werden mit angegeben
+                    "amount": 1
+                }
+            ]
+        }
+    ]
+}
+{% endraw %}
+
+# Beispiel 2
+
+Kontext Strukturelle Attribute: {"fundort": "Jablonec", "bezirk": "Pezinok"}
+
+Titel des Abschnitts: 3.29.1. Jablonec I
+Hierarchie-Kontext: 3. GRÄBERFELDER, GRÄBER UND GRABFUNDE >  3.29. JABLONEC, Bez. Pezinok > 3.29.1. Jablonec I
+
+Text:
+"""
+3.29.1. Jablonec I
+-------------
+In den Jahren 1948–1949 barg das SNM Bratislava (Ľ. Kraskovská) in der Flur Halmoš in der Ortschaft acht Kör-
+pergräber; drei von ihnen brachte V. Budinský-Krička in einen möglichen Zusammenhang mit dem Typ Veselé. Nach
+Ľ. Kraskovská kamen diese Gräber, die untenstehend als Gräber 1–3/1948–1949 bezeichnet werden, auf einer kleinen
+Anhöhe in einer Tiefe von 50–60 cm zum Vorschein; alle waren gestört. Im Grab 1 fand sich eine  Schale  (Taf. 49–A/1: 1)
+bei der Hand des/r Toten; ähnliche  Schale  stammt auch aus dem Grab 2 (Taf. 49–A/2: 1), während sich im Grab 3 ein
+Knochenpfriem  fand. Über die Fundumstände eines zweiten  Knochenpfriems  ist nach V. Budinský-Krička nichts Näheres
+bekannt. Unweit dieser Fundstelle kam bei Erdarbeiten im Jahre 1965 ein  Knochenanhänger  zum Vorschein (Taf. 49–E: 1),
+der nach M. Pichlerová möglicherweise mit den angeführten Gräbern in Verbindung steht.
+Verbleib der Funde:  SNM Bratislava (Knochenpfrieme nicht auffindbar).
+Quellen:  FB Nr. 240/49 (Ľ. Kraskovská) im AI SAW Nitra;  Budinský - Krička   1965 , 64 ff.;  Pichlerová   1968 , 351 f.
+"""
+
+Ausgabe (mit Erklärung, wieso Wert so bestimmt wurde als Kommentar in gleicher Zeile): 
+{% raw %}
+{
+    "shared_context": {
+        "structured": {
+          "fundort": "Jablonec I", // wir finden jetzt genauere Spezifikation des Fundortes im Titel
+          "bestattung_ritus": "körperbestattung", //"acht Körpergräber"
+		  "bestattung_störung": null, // Gräber waren gestört, aber von Störung der Bestattungen keine Info
+          "grube_tiefe": "60", // "in einer Tiefe von 50 – 60 cm", entscheide dich für einen möglichen Wert
+        },
+        "interpretive": []
+    },
+    "graves": [] // keine Gräber extrahiert, da hier nur Gräber erwähnt werden aber nicht explizit eigens beschrieben
+}
+{% endraw %}
+
+# Beispiel 3
+
+Kontext Strukturelle Attribute: {"fundort": "Ivanka pri Dunaji I", "bezirk": "Senec" "bestattung_ritus": "körperbestattung"}
+
+Titel des Abschnitts: Grab 3
+Hierarchie-Kontext: 3. GRÄBERFELDER, GRÄBER UND GRABFUNDE > 3.28. IVANKA PRI DUNAJI, Bez. Senec > 3.28.1. Ivanka pri Dunaji I > Grab 3
+
+Text:
+"""
+Grab 3
+-------------
+Rechteckige Grabgrube (170 x 90 x 80 cm), Skelett (nicht untersucht) fast in Rückenlage, Orientierung S–N, Schädel
+auf linker Seite, Blick nach W, linker leicht angewinkelter Arm am Körper, rechter Oberarm am Körper, Unterarm ab-
+gewinkelt, Hand über dem linken Unterarm, Beine in linker Hockerlage, nebeneinanderliegend, im Becken nach unten
+abgewinkelt, in den Knien scharf angewinkelt, Knie 20 cm über der Grabgrubensohle (Erstpublikation: Abb. 4). Lt. DP
+im Bereich des rechten, lt. Erstpublikation des linken Ohrbereichs vier ineinandergeschobene Weidenblattringe (1–4),
+daneben ein Drahtring (5), zwischen dem linken Oberarm und dem Brustkorb vier Knochenperlen, eine Anhäufung
+von Knochenperlen beim linken, drei Reihen von Knochenperlen beim rechten Knie (6).
+1.  Weidenblattring , Blatt mit beidseitiger Mittelrippe, Stiel runden Querschnitts; Dm. 3,4 x 3,9 cm (Taf. 46–3: 1).
+2.  Weidenblattring , Blatt mit undeutlicher beidseitiger Mittelrippe, Stiel runden Querschnitts, entzweigebrochen; Dm.
+2,8 x 2,9 cm (Taf. 46–3: 2).
+3.  Weidenblattring  wie Nr. 2; Dm. 2,7 cm (Taf. 46–3: 3).
+4.  Weidenblattring , Blatt flach, Stiel runden Querschnitts, beschädigt; Dm. 2,7 x 2,2 cm (Taf. 46–3: 4).
+5.  Drahtring , offen, möglicherweise Stiel des Weidenblattringes Nr. 1, Dm .  3,3 x 2,7 cm (Taf. 46-–3: 5).
+6.  Knochenperlen , kreisrund, flach bis zylindrisch, breite Lochung, ursprünglich 68 Stück, nunmehr 64 ganze Exempla-
+re und 14 Fragmente; H. 0,2-0,8 cm, Dm. 0,7–1 cm (Taf. 46–3: 6).
+"""
+
+Ausgabe (mit Erklärung, wieso Wert so bestimmt wurde als Kommentar in gleicher Zeile): 
+{% raw %}
+{
+    "shared_context": {
+        "structured": {},
+        "interpretive": []
+    },
+    "graves": [
+        {
+            "fundort": "Ivanka pri Dunaji I", //structured context oder hierarchiestring
+            "bezirk": "Senec", // structured context oder hierarchiestring
+            "grab_identifikation": "Grab 3",
+            "bestattungen": [
+                {
+                    "geschlecht": null,
+                    "alter": null,
+                    "ritus": "körperbestattung",
+                    "orientierung": "S-N",
+                    "lage": "linker Hocker",
+                    "störung": "nein"
+                }
+            ],
+            "grabeinbauten": null,
+            "grube_form": "rechteckig",
+            "grube_länge": 170,
+            "grube_breite": 90,
+            "grube_tiefe": 80,
+            "beigaben_liste": [
+                {
+                    "name": "Weidenblattring",
+                    "amount": 4
+                },
+                {
+                    "name": "Drahtring",
+                    "amount": 1
+                },
+                {
+                    "name": "Knochenperle",
+                    "amount": 68
+                }
+            ]
+        }
+    ]
+}
+{% endraw %}
+
+# Eingabe
+
+{% if inherited_interpretive or inherited_structured %}Kontext aus übergeordneten Abschnitten:{% endif %}
+{% if inherited_interpretive %}Interpretative Hinweise: '{{ inherited_interpretive }}'{% endif %}
+{% if inherited_structured %}Strukturelle Attribute: {{ inherited_structured }}{% endif %}
+
+Titel des Abschnitts: {{ section_title }}
+Hierarchie-Kontext: {{ hierarchy_str }}
+
+Text:
+"""
+{{ section_title }}
+-------------
+{{ section_text }}
+"""
