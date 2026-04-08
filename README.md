@@ -1,3 +1,5 @@
+![Project logo](static/logo.jpeg)
+
 # Grave Catalogue Extraction – Master's Thesis
 
 Automated extraction and matching of grave records from archaeological PDF catalogues. The project is split into two sequential pipelines: the **text pipeline** produces a structured extraction table from the catalogue text, and the **image pipeline** enriches it with visual information by extracting and matching embedded figures and plates to the corresponding grave entities.
